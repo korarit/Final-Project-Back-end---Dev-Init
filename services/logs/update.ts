@@ -1,19 +1,24 @@
 import { Request, Response } from "express";
-import { updateContentLog , premissionLog } from "../../models/logs.model";
+import { updateContentLog , haveLog, premissionLog } from "../../models/logs.model";
 
 export default async function update (req: Request, res: Response) {
     const data = req.body;
 
-    if(!req.session.user_id){
-        return res.status(401).json({status: false, message: 'You are not authorized to access this'});
+    if(!data.content){
+        return res.status(400).json({status: false, message: 'Please provide required field content'});
     }
 
     if(!req.params.id){
         return res.status(400).json({status: false, message: 'Please provide required id'});
     }
 
-    if(!data.content){
-        return res.status(400).json({status: false, message: 'Please provide required field content'});
+    if(!req.session.user_id){
+        return res.status(401).json({status: false, message: 'You are not authorized to access this'});
+    }
+
+    const have = await haveLog(parseInt(req.params.id));
+    if(!have){
+        return res.status(404).json({status: false, message: 'Log not found'});
     }
 
     const premission = await premissionLog(req.session.user_id, parseInt(req.params.id));

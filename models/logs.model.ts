@@ -34,7 +34,7 @@ export async function deleteLog(user_id: number, log_id: number) {
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        await connection.execute('DELETE FROM daily_logs WHERE user_id = ? AND id = ?', [user_id, log_id]);
+        await connection.execute('DELETE FROM daily_logs WHERE user_id = ? AND log_id = ?', [user_id, log_id]);
         
         return {status: true, message: 'Log deleted successfully'};
     } catch (error) {
@@ -50,7 +50,7 @@ export async function updateContentLog(user_id: number, log_id: number, content:
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        await connection.execute('UPDATE daily_logs SET content = ? WHERE user_id = ? AND id = ?', [content, user_id, log_id]);
+        await connection.execute('UPDATE daily_logs SET content = ? WHERE user_id = ? AND log_id = ?', [content, user_id, log_id]);
         
         return {status: true, message: 'Log updated successfully'};
     } catch (error) {
@@ -65,7 +65,7 @@ export async function getAllLog(user_id: number) {
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        const [rows] = await connection.execute<RowDataPacket[]>('SELECT * FROM daily_logs WHERE user_id = ?', [user_id]);
+        const [rows] = await connection.execute<RowDataPacket[]>('SELECT log_id, content, date, created_at FROM daily_logs WHERE user_id = ?', [user_id]);
         return {status: true, data: rows};
     } catch (error) {
         console.error(error);
@@ -74,12 +74,31 @@ export async function getAllLog(user_id: number) {
     }
 }
 
+export async function haveLog(log_id: number) {
+    if (!log_id) {
+        return false;
+    }
+    try {
+        const [rows] = await connection.execute<RowDataPacket[]>('SELECT log_id FROM daily_logs WHERE log_id = ?', [log_id]);
+        if (rows.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error(error);
+
+        return false;
+    }
+
+}
+
 export async function premissionLog(user_id: number, log_id: number) : Promise<boolean> {
     if (!user_id || !log_id) {
         return false;
     }
     try {
-        const [rows] = await connection.execute<RowDataPacket[]>('SELECT log_id FROM daily_logs WHERE user_id = ? AND id = ?', [user_id, log_id]);
+        const [rows] = await connection.execute<RowDataPacket[]>('SELECT log_id FROM daily_logs WHERE user_id = ? AND log_id = ?', [user_id, log_id]);
         if (rows.length > 0) {
             return true;
         } else {
@@ -97,7 +116,7 @@ export async function getLog(user_id: number, log_id: number) {
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        const [rows] = await connection.execute<RowDataPacket[]>('SELECT * FROM daily_logs WHERE user_id = ? AND id = ?', [user_id, log_id]);
+        const [rows] = await connection.execute<RowDataPacket[]>('SELECT log_id, content, date, created_at FROM daily_logs WHERE user_id = ? AND log_id = ?', [user_id, log_id]);
         return {status: true, data: rows};
     } catch (error) {
         console.error(error);

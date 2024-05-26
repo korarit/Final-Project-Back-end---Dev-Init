@@ -13,8 +13,8 @@ router.use(authentication);
 router.get("/", getAllLog);
 router.post("/", add);
 
-router.get("/logs/:id", getLogById);
-router.put("/logs/:id", updateLogById);
-router.delete("/logs/:id", deleteLogById);
+router.get("/:id", getLogById);
+router.put("/:id", updateLogById);
+router.delete("/:id", deleteLogById);
 
 export default router;
