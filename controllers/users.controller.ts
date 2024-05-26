@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
-import moment from 'moment-timezone';
-import bcrypt from 'bcrypt';
+// import moment from 'moment-timezone';
+// import bcrypt from 'bcrypt';
 
 import UserRegister from '../services/users/register';
 import UserLogin from '../services/users/login';
