@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "final backend project in borntodev dev init 2 ",
   "main": "index.ts",
-  "type": "module",
   "scripts": {
     "test": "test",
     "dev": "ts-node index.ts",
