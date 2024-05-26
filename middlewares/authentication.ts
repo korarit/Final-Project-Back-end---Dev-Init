@@ -2,6 +2,7 @@ import e, { Request, Response, NextFunction } from 'express';
 
 
 async function auth(req : Request, res: Response, next: NextFunction){
+    // console.log(req.session.user_id);
     if(req.session.user_id){
         return next();
     }else{

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 // Import routes
 import userRouter from "./routes/users";
+import logsRouter from "./routes/logs";
 
 declare module 'express-session' {
     interface SessionData {
@@ -21,19 +22,17 @@ app.use(express.json());
 
 // Middleware for session
 app.use(session({
-    name: 'sessionAuth',
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: true,
     cookie: {
-        httpOnly: true,
-        maxAge: (3600000 * 24) * 1, // 24hr
-        secure: true // cookie is only accessible over HTTP, requires HTTPS
+        secure: false // cookie is only accessible over HTTP, requires HTTPS
     }
 }));
 
 // Routes
 app.use("/users", userRouter);
+app.use("/logs", logsRouter);
 
 
 // run the server

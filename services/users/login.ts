@@ -1,10 +1,9 @@
-import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import moment from 'moment-timezone';
 import bcrypt from 'bcrypt';
 
 
-import { loginDB } from '../../models/users.model';
+import { loginDB , updateLastLogin } from '../../models/users.model';
 
 /*
     The login function will take in the email or username and password of the user and log the user into the system. 
@@ -51,6 +50,14 @@ export default async function login (req: Request, res: Response) {
             return res.status(500).json({status: false, message: 'An error occurred'});
         }
 
+        // update last login
+        const datetime_login = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+        const updateStatus = await updateLastLogin(loginStatus.user_id, datetime_login);
+
+        if (!updateStatus) {
+            return res.status(500).json({status: false, message: 'An error occurred'});
+        }
+
         // สร้าง session สำหรับ user ที่เข้าสู่ระบบ
         req.session.user_id = loginStatus.user_id;
 
@@ -80,6 +87,14 @@ export default async function login (req: Request, res: Response) {
         }
 
         if (!loginStatus.user_id) {
+            return res.status(500).json({status: false, message: 'An error occurred'});
+        }
+
+        // update last login
+        const datetime_login = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+        const updateStatus = await updateLastLogin(loginStatus.user_id, datetime_login);
+
+        if (!updateStatus) {
             return res.status(500).json({status: false, message: 'An error occurred'});
         }
 

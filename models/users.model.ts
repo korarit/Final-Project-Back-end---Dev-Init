@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
-import e from 'express';
-import mysql from 'mysql2/promise';
+import mysql, { RowDataPacket } from 'mysql2/promise';
 
 // Load environment variables
 dotenv.config();
@@ -41,8 +40,6 @@ async function registerDB (username: string, email: string, password: string, cr
         console.error(error);
 
         return {status: false, message: 'An error occurred'};
-    } finally {
-        connection.end();
     }
 }
 
@@ -63,17 +60,17 @@ interface loginResponse {
 async function loginDB (login_data: string, type: string) : Promise<loginResponse> {
     try {
         if (type === 'email') {
-            const [rows] = await connection.query('SELECT user_id , password FROM users WHERE email = ? LIMIT 1', [login_data]);
+            const [rows] = await connection.execute<RowDataPacket[]>('SELECT user_id , password FROM users WHERE email = ? LIMIT 1', [login_data]);
 
             // Check if the user exists
-            if (rows) {
+            if (rows){
                 return {status: true, user_id: rows[0].user_id, password: rows[0].password};
             } else {
                 return {status: false};
             }
 
         } else if (type === 'username') {
-            const [rows] = await connection.query('SELECT user_id , password FROM users WHERE username = ? LIMIT 1', [login_data]);
+            const [rows] = await connection.execute<RowDataPacket[]>('SELECT user_id , password FROM users WHERE username = ? LIMIT 1', [login_data]);
 
             // Check if the user exists
             if (rows) {
@@ -89,8 +86,18 @@ async function loginDB (login_data: string, type: string) : Promise<loginRespons
         console.error(error);
 
         return {status: false};
-    } finally {
-        connection.end();
+    }
+}
+
+async function updateLastLogin(user_id: number, datetime: string) : Promise<boolean> {
+    try {
+        await connection.execute('UPDATE users SET last_login = ? WHERE user_id = ?', [datetime, user_id]);
+
+        return true;
+    } catch (error) {
+        console.error(error);
+
+        return false;
     }
 }
 
@@ -108,9 +115,7 @@ async function haveUser(username:string, email: string) : Promise<boolean>{
         console.error(error);
 
         return false;
-    } finally {
-        connection.end();
     }
 }
 
-export { registerDB, loginDB, haveUser }
+export { registerDB, loginDB, updateLastLogin, haveUser }
