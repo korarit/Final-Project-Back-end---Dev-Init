@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 // Import routes
 import userRouter from "./routes/users";
 import logsRouter from "./routes/logs";
+import todoRouter from "./routes/todos";
 
 declare module 'express-session' {
     interface SessionData {
