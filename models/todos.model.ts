@@ -100,6 +100,20 @@ export async function getTodoById(user_id: number, todo_id: number) {
 
 }
 
+export async function permsissionToEdit(user_id: number, todo_id: number) {
+    if (!user_id || !todo_id) {
+        return false;
+    }
+    try {
+        const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id FROM todos WHERE user_id = ? AND todo_id = ? LIMIT 1', [user_id, todo_id]);
+        return rows.length > 0;
+    } catch (error) {
+        console.error(error);
+
+        return false;
+    }
+}
+
 export async function haveTodo(todo_id: number) {
     if (!todo_id) {
         return false;
