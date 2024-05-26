@@ -1,22 +1,29 @@
 import { Request, Response } from 'express';
 
-export async function addLog(req: Request, res: Response) {
-    return res.status(200).json({status: true, message: 'Add logs'});
+import addLog from '../services/logs/add';
+import updateLog from '../services/logs/update';
+import deleteLog from '../services/logs/delete';
+import getLog from '../services/logs/get';
+import getAllLogs from '../services/logs/all';
+
+
+export async function add(req: Request, res: Response) {
+    return await addLog(req, res);
 }
 
 export async function updateLogById(req: Request, res: Response) {
-    return res.status(200).json({status: true, message: 'Update log by id'});
+    return await updateLog(req, res);
 }
 
 export async function deleteLogById(req: Request, res: Response) {
-    return res.status(200).json({status: true, message: 'Delete log by id'});
+    return await deleteLog(req, res);
 }
 
 export async function getLogById(req: Request, res: Response) {
-    return res.status(200).json({status: true, message: 'Get log by id'});
+    return await getLog(req, res);
 }
 
 export async function getAllLog(req: Request, res: Response) {
-    return res.status(200).json({status: true, message: 'Get all logs'});
+    return await getAllLogs(req, res);
 }
 
