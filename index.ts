@@ -34,6 +34,7 @@ app.use(session({
 // Routes
 app.use("/users", userRouter);
 app.use("/logs", logsRouter);
+app.use("/todos", todoRouter);
 
 
 // run the server
