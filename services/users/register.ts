@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import moment from 'moment-timezone';
 import bcrypt from 'bcrypt';
@@ -45,7 +44,7 @@ export default async function register (req: Request, res: Response) {
     }
 
     // สร้าง DATETIME ปัจจุบัน ในรูปแบบ DD-MM-YYYY HH:mm:ss โดยกำหนดให้ timezone เป็น Asia/Bangkok
-    const created = moment().tz('Asia/Bangkok').format('DD-MM-YYYY HH:mm:ss');
+    const created = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
 
     //hash password
     const salt = await bcrypt.genSalt(10);
