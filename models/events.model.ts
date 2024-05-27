@@ -23,10 +23,10 @@ export async function addEvent(user_id: number, title: string, description: stri
     try {
         const connection = await pool.getConnection();
         try{
-            await connection.execute('INSERT INTO celendar_events (user_id, title, description, start_date, end_date, created_at) VALUES (?, ?, ?, ?)', 
+            await connection.execute('INSERT INTO celendar_events (user_id, title, description, start_date, end_date, created_at) VALUES (?, ?, ?, ?, ?, ?)', 
             [user_id, title, description, start_date, end_date, created_at]);
         
-            return {status: true, message: 'Log added successfully'};
+            return {status: true, message: 'celendar event added successfully'};
 
         } catch (error) {
             console.error(error);
@@ -57,7 +57,7 @@ export async function deleteEvent(user_id: number, event_id: number) {
         try {
             await connection.execute('DELETE FROM celendar_events WHERE user_id = ? AND event_id = ?', [user_id, event_id]);
         
-            return {status: true, message: 'Log deleted successfully'};
+            return {status: true, message: 'celendar event deleted successfully'};
         } catch (error) {
             console.error(error);
 
@@ -92,7 +92,7 @@ export async function updateEvent(user_id: number, event_id: number, data: strin
         try {
             await connection.execute(`UPDATE celendar_events SET ${field} = ? WHERE user_id = ? AND event_id = ?`, [data, user_id, event_id]);
         
-            return {status: true, message: 'Log updated successfully'};
+            return {status: true, message: 'celendar event updated successfully'};
         } catch (error) {
             console.error(error);
 

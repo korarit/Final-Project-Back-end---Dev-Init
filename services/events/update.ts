@@ -121,4 +121,7 @@ export default async function Update(req: Request, res: Response) {
             return res.status(500).json(result.message);
         }
     }
+
+    // Return the result
+    return res.status(200).json({status: true, message: 'Event updated'});
 }

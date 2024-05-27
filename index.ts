@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import userRouter from "./routes/users";
 import logsRouter from "./routes/logs";
 import todoRouter from "./routes/todos";
+import eventRouter from "./routes/events";
 
 declare module 'express-session' {
     interface SessionData {
@@ -35,6 +36,7 @@ app.use(session({
 app.use("/users", userRouter);
 app.use("/logs", logsRouter);
 app.use("/todos", todoRouter);
+app.use("/events", eventRouter);
 
 
 // run the server

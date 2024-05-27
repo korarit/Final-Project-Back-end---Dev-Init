@@ -40,5 +40,5 @@ export default async function getEventAll(req: Request, res: Response) {
 
 
     // Return the result
-    return res.status(200).json();
+    return res.status(200).json(events);
 }
