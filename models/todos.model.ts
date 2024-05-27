@@ -4,17 +4,15 @@ import mysql, { Pool, RowDataPacket } from 'mysql2/promise';
 // Load environment variables
 dotenv.config();
 
-// database connection configuration
-const dbConfig = {
+// database pool connection configuration
+const pool : Pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT as string),
     connectionLimit: 20
-}
-
-const pool : Pool = mysql.createPool(dbConfig);
+});
 
 export async function addTodo(user_id: number, title: string, description: string, due_date: string, priority: number, status: string, created_at: string) {
     if (!user_id || !title || !description || !due_date || !priority || !status || !created_at) {

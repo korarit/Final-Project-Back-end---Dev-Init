@@ -1,17 +1,17 @@
 import dotenv from 'dotenv';
-import mysql, { RowDataPacket } from 'mysql2/promise';
+import mysql, { Pool , RowDataPacket } from 'mysql2/promise';
 
 // Load environment variables
 dotenv.config();
 
-// Create a connection pool
-const connection = mysql.createPool({
+// database pool connection configuration
+const pool : Pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT as string),
-    connectionLimit: 10
+    connectionLimit: 20
 });
 
 interface registerResponse {
@@ -33,13 +33,25 @@ async function registerDB (username: string, email: string, password: string, cr
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        await connection.execute('INSERT INTO users (username, email, password, created) VALUES (?, ?, ?, ?)', [username, email, password, created]);
+        const connection = await pool.getConnection();
+
+        try {
+            await connection.execute('INSERT INTO users (username, email, password, created) VALUES (?, ?, ?, ?)', [username, email, password, created]);
         
-        return {status: true, message: 'User registered successfully'};
+            return {status: true, message: 'User registered successfully'};
+        } catch (error) {
+            console.error(error);
+
+            return {status: false, message: 'An error occurred in registering user'};
+        } finally {
+            // close the connection
+            connection.release();
+        }
+
     } catch (error) {
         console.error(error);
 
-        return {status: false, message: 'An error occurred'};
+        return {status: false, message: 'error cant connect to database'};
     }
 }
 
@@ -60,23 +72,44 @@ interface loginResponse {
 async function loginDB (login_data: string, type: string) : Promise<loginResponse> {
     try {
         if (type === 'email') {
-            const [rows] = await connection.execute<RowDataPacket[]>('SELECT user_id , password FROM users WHERE email = ? LIMIT 1', [login_data]);
 
-            // Check if the user exists
-            if (rows){
-                return {status: true, user_id: rows[0].user_id, password: rows[0].password};
-            } else {
+            const connection = await pool.getConnection();
+            try {
+                const [rows] = await connection.execute<RowDataPacket[]>('SELECT user_id , password FROM users WHERE email = ? LIMIT 1', [login_data]);
+
+                // Check if the user exists
+                if (rows){
+                    return {status: true, user_id: rows[0].user_id, password: rows[0].password};
+                } else {
+                    return {status: false};
+                }
+            } catch (error) {
+                console.error(error);
+
                 return {status: false};
+            } finally {
+                // close the connection
+                connection.release();
             }
 
         } else if (type === 'username') {
-            const [rows] = await connection.execute<RowDataPacket[]>('SELECT user_id , password FROM users WHERE username = ? LIMIT 1', [login_data]);
+            const connection = await pool.getConnection();
+            try {
+                const [rows] = await connection.execute<RowDataPacket[]>('SELECT user_id , password FROM users WHERE username = ? LIMIT 1', [login_data]);
 
-            // Check if the user exists
-            if (rows) {
-                return {status: true, user_id: rows[0].user_id, password: rows[0].password};
-            } else {
+                // Check if the user exists
+                if (rows) {
+                    return {status: true, user_id: rows[0].user_id, password: rows[0].password};
+                } else {
+                    return {status: false};
+                }
+            } catch (error) {
+                console.error(error);
+
                 return {status: false};
+            } finally {
+                // close the connection
+                connection.release();
             }
 
         } else {
@@ -91,9 +124,21 @@ async function loginDB (login_data: string, type: string) : Promise<loginRespons
 
 async function updateLastLogin(user_id: number, datetime: string) : Promise<boolean> {
     try {
-        await connection.execute('UPDATE users SET last_login = ? WHERE user_id = ?', [datetime, user_id]);
+        const connection = await pool.getConnection();
 
-        return true;
+        try {
+            await connection.execute('UPDATE users SET last_login = ? WHERE user_id = ?', [datetime, user_id]);
+
+            return true;
+        } catch (error) {
+            console.error(error);
+
+            return false;
+        } finally {
+            // close the connection
+            connection.release();
+        }
+
     } catch (error) {
         console.error(error);
 
@@ -103,14 +148,27 @@ async function updateLastLogin(user_id: number, datetime: string) : Promise<bool
 
 async function haveUser(username:string, email: string) : Promise<boolean>{
     try {
-        const [rows] = await connection.execute('SELECT user_id FROM users WHERE email = ? OR username = ? LIMIT 1', [email, username]);
+        
+        const connection = await pool.getConnection();
 
-        // Check if the user exists
-        if (Array.isArray(rows) && rows.length > 0){
-            return true;
-        } else {
+        try {
+            const [rows] = await connection.execute('SELECT user_id FROM users WHERE email = ? OR username = ? LIMIT 1', [email, username]);
+
+            // Check if the user exists
+            if (Array.isArray(rows) && rows.length > 0){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+
             return false;
+        } finally {
+            // close the connection
+            connection.release();
         }
+
     } catch (error) {
         console.error(error);
 
