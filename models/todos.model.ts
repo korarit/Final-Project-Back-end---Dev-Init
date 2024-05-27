@@ -1,28 +1,37 @@
 import dotenv from 'dotenv';
-import mysql, { RowDataPacket } from 'mysql2/promise';
+import mysql, { Pool, RowDataPacket } from 'mysql2/promise';
 
 // Load environment variables
 dotenv.config();
 
-// Create a connection pool
-const connection = mysql.createPool({
+// database connection configuration
+const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT as string),
-    connectionLimit: 10
-});
+    connectionLimit: 20
+}
 
-export async function addTodo(user_id: number, title: string, description: string, due_date: string, priority: number, status: number, created_at: string) {
+const pool : Pool = mysql.createPool(dbConfig);
+
+export async function addTodo(user_id: number, title: string, description: string, due_date: string, priority: number, status: string, created_at: string) {
     if (!user_id || !title || !description || !due_date || !priority || !status || !created_at) {
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        await connection.execute('INSERT INTO todos (user_id, title, description, due_date, priority, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-        [user_id, title, description, due_date, priority, status, created_at]);
+        const connection = await pool.getConnection();
+        try {
+            await connection.execute('INSERT INTO todo_list (user_id, title, description, due_date, priority, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+            [user_id, title, description, due_date, priority, status, created_at]);
+
+            return {status: true, message: 'Todo added successfully'};
+        } finally {
+            // close the connection
+            connection.release();
+        }
         
-        return {status: true, message: 'Todo added successfully'};
     } catch (error) {
         console.error(error);
 
@@ -35,9 +44,16 @@ export async function deleteTodo(user_id: number, todo_id: number) {
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        await connection.execute('DELETE FROM todos WHERE user_id = ? AND todo_id = ?', [user_id, todo_id]);
-        
-        return {status: true, message: 'Todo deleted successfully'};
+        // get a connection from the pool
+        const connection = await pool.getConnection();
+        try {
+            await connection.execute('DELETE FROM todo_list WHERE user_id = ? AND todo_id = ?', [user_id, todo_id]);
+            
+            return {status: true, message: 'Todo deleted successfully'};
+        } finally {
+            // close the connection form pool
+            connection.release();
+        }
     } catch (error) {
         console.error(error);
 
@@ -59,9 +75,15 @@ export async function updateTodo(user_id: number, todo_id: number, data: string 
     }
 
     try {
-        await connection.execute(`UPDATE todos SET ${field} = ? WHERE user_id = ? AND todo_id = ?`, [field, data, user_id, todo_id]);
-        
-        return {status: true, message: 'Todo status updated successfully'};
+        const connection = await pool.getConnection();
+        try {
+            await connection.execute(`UPDATE todo_list SET ${field} = ? WHERE user_id = ? AND todo_id = ?`, [data, user_id, todo_id]);
+            
+            return {status: true, message: 'Todo status updated successfully'};
+        } finally {
+            // close the connection
+            connection.release();
+        }
     } catch (error) {
         console.error(error);
 
@@ -75,8 +97,16 @@ export async function getAllTodos(user_id: number) {
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id, title, description, due_date, priority, status, created_at FROM todos WHERE user_id = ?', [user_id]);
-        return {status: true, data: rows};
+        const connection = await pool.getConnection();
+        try {
+            const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id, title, description, due_date, priority, status, created_at FROM todo_list WHERE user_id = ?', [user_id]);
+            
+            return {status: true, data: rows};
+        } finally {
+            // close the connection
+            connection.release();
+        }
+        
     } catch (error) {
         console.error(error);
 
@@ -90,8 +120,17 @@ export async function getTodoById(user_id: number, todo_id: number) {
         return {status: false, message: 'Please provide all required fields'};
     }
     try {
-        const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id, title, description, due_date, priority, status, created_at FROM todos WHERE user_id = ? AND todo_id = ? LIMIT 1', [user_id, todo_id]);
-        return {status: true, data: rows};
+        const connection = await pool.getConnection();
+        try {
+            const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id, title, description, due_date, priority, status, created_at FROM todo_list WHERE user_id = ? AND todo_id = ? LIMIT 1', [user_id, todo_id]);
+        
+            return {status: true, data: rows};
+        } finally {
+            // close the connection
+            connection.release();
+        }
+        
+        
     } catch (error) {
         console.error(error);
 
@@ -105,8 +144,15 @@ export async function permsissionToEdit(user_id: number, todo_id: number) {
         return false;
     }
     try {
-        const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id FROM todos WHERE user_id = ? AND todo_id = ? LIMIT 1', [user_id, todo_id]);
-        return rows.length > 0;
+        const connection = await pool.getConnection();
+        try {
+            const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id FROM todo_list WHERE user_id = ? AND todo_id = ? LIMIT 1', [user_id, todo_id]);
+            
+            return rows.length > 0;
+        } finally {
+            // close the connection
+            connection.release();
+        }        
     } catch (error) {
         console.error(error);
 
@@ -119,8 +165,16 @@ export async function haveTodo(todo_id: number) {
         return false;
     }
     try {
-        const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id FROM todos WHERE todo_id = ? LIMIT 1', [todo_id]);
-        return rows.length > 0;
+        const connection = await pool.getConnection();
+        try {
+            const [rows] = await connection.execute<RowDataPacket[]>('SELECT todo_id FROM todo_list WHERE todo_id = ? LIMIT 1', [todo_id]);
+            
+            return rows.length > 0;
+        } finally {
+            // close the connection
+            connection.release();
+        }
+        
     } catch (error) {
         console.error(error);
 

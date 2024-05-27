@@ -20,7 +20,7 @@ export default async function All(req: Request, res: Response) {
 
     const list_todo = result.data?.map((todo: any) => {
         return {
-            id: todo.id,
+            todo_id: todo.todo_id,
             title: todo.title,
             description: todo.description,
             due_date: new Date(todo.due_date).toLocaleDateString('th-TH', {timeZone: 'Asia/Bangkok'}),

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import moment from 'moment-timezone';
 
-import { getTodoById, permsissionToEdit } from '../../models/todos.model';
+import { getTodoById, permsissionToEdit , haveTodo } from '../../models/todos.model';
 
 export default async function GetTodoById(req: Request, res: Response) {
 
@@ -12,6 +12,13 @@ export default async function GetTodoById(req: Request, res: Response) {
     if(!req.session.user_id){
         return res.status(401).json({status: false, message: 'You are not authorized to access this'});
     }
+
+    //check have todo id
+    const haveTodoId = await haveTodo(parseInt(req.params.id));
+    if(!haveTodoId){
+        return res.status(400).json({status: false, message: 'Todo id not found'});
+    }
+
 
     //check permission to edit
     const havePermission = await permsissionToEdit(req.session.user_id, parseInt(req.params.id));
@@ -30,7 +37,7 @@ export default async function GetTodoById(req: Request, res: Response) {
 
     const todo = result.data?.map((todo: any) => {
         return {
-            id: todo.id,
+            todo_id: todo.todo_id,
             title: todo.title,
             description: todo.description,
             due_date: new Date(todo.due_date).toLocaleDateString('th-TH', {timeZone: 'Asia/Bangkok'}),

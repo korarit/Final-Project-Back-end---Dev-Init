@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { deleteTodo, permsissionToEdit } from '../../models/todos.model';
+import { deleteTodo, haveTodo, permsissionToEdit } from '../../models/todos.model';
 
 export default async function Deleted(req: Request, res: Response) {
 
@@ -10,6 +10,12 @@ export default async function Deleted(req: Request, res: Response) {
 
     if(!req.session.user_id){
         return res.status(401).json({status: false, message: 'You are not authorized to access this'});
+    }
+
+    //check have todo id
+    const haveTodoId = await haveTodo(parseInt(req.params.id));
+    if(!haveTodoId){
+        return res.status(400).json({status: false, message: 'Todo id not found'});
     }
 
     // Check if the user has permission to edit
