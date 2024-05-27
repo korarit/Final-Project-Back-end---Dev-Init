@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { getAllEvent } from '../../models/events.model';
 
-export async function getEventAll(req: Request, res: Response) {
+export default async function getEventAll(req: Request, res: Response) {
 
     if(!req.session.user_id){
         return res.status(401).json({status: false, message: 'You are not authorized to access this'});

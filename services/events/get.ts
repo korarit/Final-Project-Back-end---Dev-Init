@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { getEventById, haveEvent, permissionToEdit } from '../../models/events.model';
 
-export async function Get(req: Request, res: Response) {
+export default async function GetEvent(req: Request, res: Response) {
    
     if(!req.params.id){
         return res.status(400).json({status: false, message: 'Please provide id'});
