@@ -4,7 +4,7 @@
   "description": "final backend project in borntodev dev init 2 ",
   "main": "index.ts",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "dev": "ts-node index.ts",
     "tsc": "tsc --init"
   },
@@ -22,7 +22,8 @@
     "jest": "^29.7.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
-    "mysql2": "^3.9.7"
+    "mysql2": "^3.9.7",
+    "ts-jest": "^29.1.4"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.24.5",
