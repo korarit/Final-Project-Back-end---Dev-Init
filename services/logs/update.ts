@@ -13,7 +13,7 @@ export default async function update (req: Request, res: Response) {
     }
 
     if(!req.session.user_id){
-        return res.status(401).json({status: false, message: 'You are not authorized to access this'});
+        return res.status(401).json({status: false, message: 'You are not authorized please login '});
     }
 
     const have = await haveLog(parseInt(req.params.id));
@@ -24,7 +24,7 @@ export default async function update (req: Request, res: Response) {
     const premission = await premissionLog(req.session.user_id, parseInt(req.params.id));
 
     if(!premission){
-        return res.status(401).json({status: false, message: 'You are not premission to delete this'});
+        return res.status(401).json({status: false, message: 'You are not premission to access this'});
     }
 
     const result = await updateContentLog(req.session.user_id, parseInt(req.params.id), data.content);

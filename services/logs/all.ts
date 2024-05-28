@@ -19,7 +19,7 @@ export default async function (req: Request, res: Response) {
 
     const new_list_log = result.data.map((log: any) => {
         return {
-            id: log.id,
+            id: log.log_id,
             content: log.content,
             date: new Date(log.created_at).toLocaleString('th-TH', {timeZone: 'Asia/Bangkok'}),
             created_at: new Date(log.date).toLocaleDateString('th-TH', {timeZone: 'Asia/Bangkok'})
