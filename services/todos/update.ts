@@ -27,7 +27,7 @@ export default async function update(req: Request, res: Response) {
         }
 
         // check length of title
-        if(req.body.title.length > 0){
+        if(req.body.title === "" || req.body.title.length === 0){
             return res.status(400).json({status: false, message: 'Title must be at least 0 characters'});
         }
     }
@@ -39,7 +39,7 @@ export default async function update(req: Request, res: Response) {
         }
 
         // check length of description
-        if(req.body.description.length > 0){
+        if(req.body.description === "" || req.body.description.length === 0){
             return res.status(400).json({status: false, message: 'Description must be at least 0 characters'});
         }
     }
@@ -69,7 +69,7 @@ export default async function update(req: Request, res: Response) {
     //check have todo id
     const haveTodoId = await haveTodo(parseInt(req.params.id));
     if(!haveTodoId){
-        return res.status(400).json({status: false, message: 'Todo id not found'});
+        return res.status(404).json({status: false, message: 'Todo id not found'});
     }
 
     // check permission to edit

@@ -17,13 +17,13 @@ export default async function login (req: Request, res: Response) {
     const data = req.body;
 
     if(!data.password) {
-        return res.status(400).json({status: false, message: 'Please provide  required field password'});
+        return res.status(401).json({status: false, message: 'Please provide  required field password'});
     }
 
     if (data.email) {
         // ตรวจสอบความถูกต้องของ email
         if (!data.email.match(/\S+@\S+\.\S+/)) {
-            return res.status(400).json({status: false, message: 'Please provide a valid email address'});
+            return res.status(401).json({status: false, message: 'Please provide a valid email address'});
         }
 
         // เรียกใช้งานฟังก์ชัน loginDB จาก models/users.model.ts

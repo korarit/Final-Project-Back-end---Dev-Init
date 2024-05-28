@@ -7,6 +7,7 @@ import userRouter from "./routes/users";
 import logsRouter from "./routes/logs";
 import todoRouter from "./routes/todos";
 import eventRouter from "./routes/events";
+import exp from "constants";
 
 declare module 'express-session' {
     interface SessionData {
@@ -40,6 +41,9 @@ app.use("/events", eventRouter);
 
 
 // run the server
-app.listen(process.env.SERVER_PORT, () => {
-    console.log(`Server is running on port ${process.env.SERVER_PORT}`);
-});
+// const PORT = process.env.SERVER_PORT || 3001;
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${process.env.SERVER_PORT}`);
+// });
+
+export default app;

@@ -12,20 +12,20 @@ export default async function Add(req: Request, res: Response) {
 
     // Check if the request body is empty
     if(!data.title || !data.description || !data.due_date || !data.priority || !data.status){
-        return res.status(400).json({status: false, message: 'Please provide required field (title, description, due_date, priority, status)'});
+        return res.status(402).json({status: false, message: 'Please provide required field (title, description, due_date, priority, status)'});
     }
 
     if(isNaN(data.priority)){
-        return res.status(400).json({status: false, message: 'Please provide a valid priority (is a number)'});
+        return res.status(402).json({status: false, message: 'Please provide a valid priority (is a number)'});
     }
 
     if(typeof data.status !== 'boolean'){
-        return res.status(400).json({status: false, message: 'Please provide a valid status (true or false)'});
+        return res.status(402).json({status: false, message: 'Please provide a valid status (true or false)'});
     }
 
     //date format validation
     if(!moment(data.due_date).isValid()){
-        return res.status(400).json({status: false, message: 'Please provide a valid due_date format YYYY-MM-DD'});
+        return res.status(402).json({status: false, message: 'Please provide a valid due_date format YYYY-MM-DD'});
     }
 
 
