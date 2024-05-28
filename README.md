@@ -12,6 +12,9 @@ This project used `Programming language` **/** `libary` **/** `framework`
 - Moment-timezone
 - Bcrypt
 
+Database use **`Mysql`** OR **`Mariadb`**
+
+####
 auto unit testing used **`Jest` + `Suppertest`**
 ####
 you can use this command to install package for use project
@@ -35,6 +38,10 @@ DB_USER=root
 DB_PASSWORD=123
 DB_NAME=final_borntodev
 ```
+
+## Database
+you can use **`Mysql`** OR **`Mariadb`**  import file final_borntodev.sql to database server
+
 ## API Path
 
 - **`POST /users/regiser`** for regiser new user
@@ -141,14 +148,28 @@ DB_NAME=final_borntodev
 
 **`DELETE /events/:id`** for delete events by id not have payload
 
-## How To Run Test
-use this command for run test
+## How To Run Test (Step By Step)
+1. import file final_borntodev.sql to database server
+
+2. user this command for install package
+```
+npm install
+```
+
+3. use this command for run test
 ```
 npm run dev
 ```
 
 ## How To Run Jest
-use this command for auto unit test but you need to fix
+1. import file final_borntodev.sql to database server
+
+2. user this command for install package
+```
+npm install
+```
+
+3. use this command for auto unit test but you need to fix
 you fix id in test case delete logs / todos / events By Id and test case regiser If you don't do it, there will be an error.
 ```
 npm test
