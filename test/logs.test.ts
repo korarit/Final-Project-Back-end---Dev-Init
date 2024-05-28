@@ -1,4 +1,4 @@
-import app from "../index";
+import app from "../app";
 
 // Import supertest
 import request from "supertest";
